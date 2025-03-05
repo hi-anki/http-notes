@@ -1,4 +1,4 @@
-# HyperText Transfer Protocol (HTTP), An Introduction
+# HyperText Transfer Protocol (HTTP)
 - [HyperText Transfer Protocol (HTTP), An Introduction](#hypertext-transfer-protocol-http-an-introduction)
   - [HTTP Request](#http-request)
     - [Request Methods](#request-methods)
