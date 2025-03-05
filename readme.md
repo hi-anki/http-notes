@@ -229,7 +229,7 @@ Discrete type includes types which represent a single file or medium, such as a 
      + Data that consists of multiple components which may individually have different MIME types.
 
 ### Important MIME TYpes
-1. **application/octet-stream**
+1. `application/octet-stream`
    + This is the default for binary files.
    + As it means unknown binary file, browsers usually don't execute.
    + They treat it as if the `Content-Disposition` header was set to `attachment`, and propose a "**Save As**" dialog.
