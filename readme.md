@@ -10,6 +10,13 @@
   - [HTTP Response](#http-response)
     - [HTTP Response Status Code](#http-response-status-code)
   - [HTTP Headers](#http-headers)
+  - [MIME Types](#mime-types)
+    - [Structure](#structure)
+    - [Classification Of `type`](#classification-of-type)
+      - [Discrete `type`](#discrete-type)
+      - [Multipart `type`](#multipart-type)
+    - [Important MIME TYpes](#important-mime-types)
+    - [Note: Legacy JavaScript MIME Types](#note-legacy-javascript-mime-types)
 - [Reference](#reference)
 
 + An application layer protocol.
@@ -165,6 +172,101 @@ Also referred as HTTP Verbs.
   ```
 + Some headers are exclusive to either requests or responses, while others can be used in both.
 
+## MIME Types
++ A media type (also known as a **Multipurpose Internet Mail Extensions or MIME type**) indicates the nature and format of a document, file, or assortment of bytes.
++ Browsers use MIME type, not the file extension, to determine how to process a URL, so it's important that web servers send the correct MIME type in the response's `Content-Type` header.
+
+### Structure
+```
+type/sub_type
+
+type/subtype;parameter=value
+```
+
++ The type represents the general category in which the data type falls.
++ The subtype identifies the exact kind of data.
++ An optional parameter can be added to provide additional details:
+  ```
+  type/subtype;parameter=value
+  ```
+  > For example, for any MIME type whose main type is text, an optional `charset` parameter can be used to specify the character-set used for the characters in the data. If no `charset` is specified, the default is `ASCII (US-ASCII)` unless overridden by the user agent's settings. To specify a UTF-8 text file, the MIME type `text/plain;charset=UTF-8` is used.
+----
++ MIME types are case-insensitive but are traditionally written in lowercase. The parameter values can be case-sensitive.
+
+### Classification Of `type`
+There are two classes of type: **discrete** and **multipart**
+
+#### Discrete `type`
+Discrete type includes types which represent a single file or medium, such as a single text or music file.
+
+1. `application`
+   + Any kind of binary data that doesn't fall explicitly into one of the other types.
+   + Any data that requires specialized applications to interpret it.
+   + For binary documents without a specific or known subtype, `application/octet-stream` should be used.
+2. `audio`
+3. `example`
+   + Reserved for use as a placeholder in examples showing how to use MIME types.
+   + It can also be used a sub_type.
+4. `font`
+5. `image`
+6. `model`, includes model data for a 3D object or scene.
+7. `text`
+   + Includes any human-readable data.
+   + For text documents without a specific subtype, `text/plain` should be used
+8. `video`
+9. `haptics`
+10. `message`
+
+#### Multipart `type`
++ A multipart type represent a composite document, a document that's comprised of multiple component parts, each of which may have its own individual MIME type; or, a multipart type may encapsulate multiple files being sent together in one transaction. 
+  + For example, multipart MIME types are used when attaching multiple files to an email.
++ Except for `multipart/form-data`, which is used in `POST` requests to submit HTML Forms, and `multipart/byteranges`, used with `206 Partial Content` to send part of a document, HTTP doesn't handle multipart documents in a special way: the message is transmitted to the browser (which will likely show a "Save As" window if it doesn't know how to display the document).
+
++ It is further divided into two types:
+  1. `message`
+     + A message that encapsulates other messages. This can be used, for instance, to represent an email that includes a forwarded message as part of its data.
+  2. `multipart`
+     + Data that consists of multiple components which may individually have different MIME types.
+
+### Important MIME TYpes
+1. **application/octet-stream**
+   + This is the default for binary files.
+   + As it means unknown binary file, browsers usually don't execute.
+   + They treat it as if the `Content-Disposition` header was set to `attachment`, and propose a "**Save As**" dialog.
+
+2. `text/plain`
+   + This is the default for textual files.
+   + **Note:** `text/plain` does not mean "any kind of textual data." If they expect a specific kind of textual data, they will likely not consider it a match.
+
+3. `text/css`
+4. `text/html`
+5. `text/javascript`: JavaScript content should be strictly served using this MIME type.
+6. `image/jpg`
+7. `image/jpeg`
+8. `image/png`
+9. `image/webp`
+10. `image/gif`
+11. `multipart/form-data`, submitting HTML Form data.
+
+### Note: Legacy JavaScript MIME Types
+The MIME Sniffing Standard also allows JavaScript to be served using any of the following legacy JavaScript MIME types:
++ `application/javascript` (Deprecated)
++ `application/ecmascript` (Deprecated)
++ `application/x-ecmascript` (Non-standard)
++ `application/x-javascript` (Non-standard)
++ `text/ecmascript` (Deprecated)
++ `text/javascript1.0` (Non-standard)
++ `text/javascript1.1` (Non-standard)
++ `text/javascript1.2` (Non-standard)
++ `text/javascript1.3` (Non-standard)
++ `text/javascript1.4` (Non-standard)
++ `text/javascript1.5` (Non-standard)
++ `text/jscript` (Non-standard)
++ `text/livescript` (Non-standard)
++ `text/x-ecmascript` (Non-standard)
++ `text/x-javascript` (Non-standard)
+
 # Reference
 + [HTTP Reference, on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
 + [Stateless Protocol, Wikipedia](https://en.wikipedia.org/wiki/Stateless_protocol)
++ [Complete List Of MIME Types, IANA Registry](https://www.iana.org/assignments/media-types/media-types.xhtml)
