@@ -18,6 +18,9 @@
     - [Note: Legacy JavaScript MIME Types](#note-legacy-javascript-mime-types)
     - [MIME Sniffing](#mime-sniffing)
     - [File Type Interpretation Methods](#file-type-interpretation-methods)
+  - [Compression In HTTP](#compression-in-http)
+    - [File Format Compression](#file-format-compression)
+    - [End-to-End Compression](#end-to-end-compression)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -311,6 +314,27 @@ The MIME Sniffing Standard also allows JavaScript to be served using any of the 
    + The syntax of different formats allows file-type inference by looking at their byte structure. 
    + For example, GIF files start with the `47 49 46 38 39` hexadecimal value (GIF89), and PNG files with `89 50 4E 47` (.PNG). 
    + Not all file types have magic numbers, so this is not 100% reliable either.
+
+## Compression In HTTP
++ Compression is an important way to increase the performance of a website.
++ It can significantly reduce the network bandwidth consumption.
+
+### File Format Compression
++ Each data type has some redundancy, that is wasted space, in it
++ Compression algorithms used for files can be grouped into two broad categories:
+  1. **Loss-less Compression:** Here the compression-decompression cycle doesn't alter the data. Ex: gif or png.
+  2. **Lossy Compression:** Here the compression-decompression cycle alters the original data in a (hopefully) imperceptible way for the user. Video formats on the Web are lossy; the jpeg image format is also lossy.
++ Some formats can be used for both loss-less or lossy compression, like `webp`.
++ Lossy compression algorithms are usually more efficient than loss-less ones.
+
+### End-to-End Compression
++ It is where the largest performance improvements of websites reside. 
++ It refers to a compression of message body that is done by the server and will last unchanged until it reaches the client. Whatever the intermediate nodes are, they leave the body untouched. 
++ All modern browsers and servers support it and the only thing to negotiate is the compression algorithm to use. These algorithms are optimized for text.
++ The 2 most algorithms are: `gzip` and `br`.
++ To select the algorithm to use, browsers and servers use **proactive content negotiation**. 
+  + The browser sends an `Accept-Encoding` header with the algorithms it supports and its order of precedence, the server picks one, uses it to compress the body of the response and uses the `Content-Encoding` header to tell the browser the algorithm it has chosen. 
+  + As content negotiation has been used to choose a representation based on its encoding, the server must send a `Vary` header containing at least `Accept-Encoding` alongside this header in the response; that way, **caches** will be able to cache the different representations of the resource.
 
 # Reference
 + [HTTP Reference, on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
