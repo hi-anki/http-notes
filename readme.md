@@ -16,6 +16,8 @@
       - [Multipart `type`](#multipart-type)
     - [Important MIME TYpes](#important-mime-types)
     - [Note: Legacy JavaScript MIME Types](#note-legacy-javascript-mime-types)
+    - [MIME Sniffing](#mime-sniffing)
+    - [File Type Interpretation Methods](#file-type-interpretation-methods)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -246,7 +248,38 @@ Discrete type includes types which represent a single file or medium, such as a 
 8. `image/png`
 9. `image/webp`
 10. `image/gif`
-11. `multipart/form-data`, submitting HTML Form data.
+11. `multipart/form-data`: submitting HTML Form data.
+    - It is delimited by a boundary, a string starting with a double dash `--`. Each part is its own entity with its own HTTP headers, Content-Disposition, and Content-Type for file uploading fields.
+    - Example
+      ```
+      POST / HTTP/1.1
+      Host: localhost:8000
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+      Accept-Language: en-US,en;q=0.5
+      Accept-Encoding: gzip, deflate
+      Connection: keep-alive
+      Upgrade-Insecure-Requests: 1
+      Content-Type: multipart/form-data; boundary=---------------------------8721656041911415653955004498
+      Content-Length: 465
+
+      -----------------------------8721656041911415653955004498
+      Content-Disposition: form-data; name="myTextField"
+
+      Test
+      -----------------------------8721656041911415653955004498
+      Content-Disposition: form-data; name="myCheckBox"
+
+      on
+      -----------------------------8721656041911415653955004498
+      Content-Disposition: form-data; name="myFile"; filename="test.txt"
+      Content-Type: text/plain
+
+      Simple file.
+      -----------------------------8721656041911415653955004498--
+
+      ```
+12. `multipart/byteranges`: used to send partial responses to the browser.
 
 ### Note: Legacy JavaScript MIME Types
 The MIME Sniffing Standard also allows JavaScript to be served using any of the following legacy JavaScript MIME types:
@@ -266,7 +299,21 @@ The MIME Sniffing Standard also allows JavaScript to be served using any of the 
 + `text/x-ecmascript` (Non-standard)
 + `text/x-javascript` (Non-standard)
 
+### MIME Sniffing
++ In the absence of a MIME type, or in cases where the browser believe the proposed MIME type is incorrect, browsers try to guess the correct MIME type by looking at the bytes of the resource.
++ Each browser performs MIME sniffing differently and under different circumstances.
++ There are security concerns as some MIME types represent executable content. Servers can prevent MIME sniffing by sending the `X-Content-Type-Options` header.
+
+### File Type Interpretation Methods
+1. MIME types is the most preferred option.
+2. Filename suffixes can be used sometimes, especially on Microsoft Windows. But there is no guarantee they are correct.
+3. Magic Numbers. 
+   + The syntax of different formats allows file-type inference by looking at their byte structure. 
+   + For example, GIF files start with the `47 49 46 38 39` hexadecimal value (GIF89), and PNG files with `89 50 4E 47` (.PNG). 
+   + Not all file types have magic numbers, so this is not 100% reliable either.
+
 # Reference
 + [HTTP Reference, on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
 + [Stateless Protocol, Wikipedia](https://en.wikipedia.org/wiki/Stateless_protocol)
 + [Complete List Of MIME Types, IANA Registry](https://www.iana.org/assignments/media-types/media-types.xhtml)
++ [Common MIME Types, MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types)
