@@ -1,4 +1,3 @@
-# HyperText Transfer Protocol (HTTP)
 - [HyperText Transfer Protocol (HTTP)](#hypertext-transfer-protocol-http)
   - [HTTP Request](#http-request)
     - [Request Methods](#request-methods)
@@ -19,6 +18,7 @@
     - [Note: Legacy JavaScript MIME Types](#note-legacy-javascript-mime-types)
 - [Reference](#reference)
 
+# HyperText Transfer Protocol (HTTP)
 + An application layer protocol.
 + Works on client-server model, where a user initiates a request using their browser (`user-agent`) and a server responds to that request. These messages are called **request** and **response**.
   > **Note:** Browsers aren't the only `user-agent`. Utilities like `curl`, `python-requests` have their own `user-agent`.
