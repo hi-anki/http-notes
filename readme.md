@@ -21,6 +21,12 @@
   - [Compression In HTTP](#compression-in-http)
     - [File Format Compression](#file-format-compression)
     - [End-to-End Compression](#end-to-end-compression)
+  - [Caching](#caching)
+    - [Types Of Cache](#types-of-cache)
+    - [Stored HTTP Response State](#stored-http-response-state)
+    - [Validation](#validation)
+    - [Force Revalidation](#force-revalidation)
+    - [Don't Cache](#dont-cache)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -335,6 +341,54 @@ The MIME Sniffing Standard also allows JavaScript to be served using any of the 
 + To select the algorithm to use, browsers and servers use **proactive content negotiation**. 
   + The browser sends an `Accept-Encoding` header with the algorithms it supports and its order of precedence, the server picks one, uses it to compress the body of the response and uses the `Content-Encoding` header to tell the browser the algorithm it has chosen. 
   + As content negotiation has been used to choose a representation based on its encoding, the server must send a `Vary` header containing at least `Accept-Encoding` alongside this header in the response; that way, **caches** will be able to cache the different representations of the resource.
+
+## Caching
++ The HTTP cache stores a response associated with a request and reuses the stored response for subsequent requests.
++ Advantages:
+  1. The closer the client and cache are, the faster the response will be. Sometimes, even the browser itself stores a cache for browser requests.
+  2. Reduces the load on the server.
+
+### Types Of Cache
+1. **Private Cache:**
+   + A private cache is tied to a specific client, typically a browser cache. 
+   + Since the stored response is not shared with other clients, a private cache can store a personalized response for that user. 
+   + If a response contains personalized content and you want to store the response only in the private cache, you must specify a private directive. Like this: `Cache-Control: private`
+   + Personalized contents are usually controlled by cookies, but the presence of a cookie does not always indicate that it is private, and thus a cookie alone does not make the response private.
+
+2. **Shared Cache:**
+   + A shared cache is stored between the client and the server and can store responses that can be shared among users. 
+   + They can be further classified into **proxy caches** and **managed caches**.
+   + **Proxy Cache:** 
+   + **Managed Cache:** Managed caches are explicitly deployed by service developers to offload the origin server and to deliver content efficiently. Examples include reverse proxies, CDNs, and service workers in combination with the Cache API.
+
+3. **Heuristic Cache:** HTTP is designed to cache as much as possible, so even if no `Cache-Control` is given, responses will get stored and reused if certain conditions are met. This is called heuristic caching.
+
+### Stored HTTP Response State
+1. **Fresh:** It indicates that the response is still valid and can be reused.
+2. **Stale:** It indicates that the cached response has already expired.
+----
+
++ The criterion for determining a response's state is its **age**.
++ **Age** is the time elapsed since the response was generated.
+
+### Validation
++ Stale responses are not immediately discarded. HTTP has a mechanism to transform a stale response into a fresh one by asking the origin server. This is called **validation**, or sometimes, **revalidation**.
++ Validation is done by using a **conditional request** that includes an `If-Modified-Since` or `If-None-Match` request header.
++ A client can send a request with an If-Modified-Since request header to ask the server if there have been any changes made since the specified time. 
+  + If the server respond with a `304 Not Modified`, it indicates **no change**. 
+  + The client reverts the stored stale response back to being fresh and can reuse it for 1 more hour.
+
++ A client can also use an ETag value to do this.
+  + The client can take the ETag value for the response header for the cached response, and puts it into the If-None-Match request header, to ask the server if the resource has been modified.
+  + If the server respond with a `304 Not Modified`, it indicates **no change**. 
+  + But if the server determines the requested resource should now have a different ETag value, the server will instead respond with a 200 OK and the latest version of the resource.
+
+### Force Revalidation
++ If you do not want a response to be reused, but instead want to always fetch the latest content from the server, you can use the `no-cache` directive to force validation.
++ `max-age=0` means that the response is immediately stale, and `must-revalidate` means that it must not be reused without revalidation once it is stale — so, in combination, the semantics seem to be the same as `no-cache`.
+
+### Don't Cache
+To prevent caching of a response, use `no-store`.
 
 # Reference
 + [HTTP Reference, on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
