@@ -34,6 +34,13 @@
     - [Authentication Method](#authentication-method)
     - [Authentication Schemes](#authentication-schemes)
     - [Basic HTTP Authentication (RFC 7617)](#basic-http-authentication-rfc-7617)
+  - [Cookies](#cookies)
+    - [Creating Cookies](#creating-cookies)
+    - [Updating Cookies](#updating-cookies)
+    - [Types Of Cookies (On Th Basis Of Their Life)](#types-of-cookies-on-th-basis-of-their-life)
+    - [Cookie Recreation](#cookie-recreation)
+    - [Security Aspect](#security-aspect)
+      - [Some Knowledge](#some-knowledge)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -460,6 +467,114 @@ Amazon AWS Server Authentication (`AWS4-HMAC-SHA256`)
 ### Basic HTTP Authentication (RFC 7617)
 + It transmits credentials as user ID/password pairs, encoded using base64, still in plain-text.
 + HTTPS/TLS should be used with basic authentication as it is not secure at all.
+
+## Cookies
++ Also known as a web cookie or browser cookie.
++ It is a small piece of data a server sends to a user's web browser.
++ Cookies enable web applications to store limited amounts of data and remember state information.
++ Typically, the server will use cookies to determine whether the different requests are coming from the same browser/user and then issue a personalized or generic response as appropriate.
++ Cookies are mainly used for three purposes:
+  1. **Session management**: User sign-in status, shopping cart contents, game scores, or any other user session-related details that the server needs to remember.
+  2. **Personalization**: User preferences such as display language and UI theme.
+  3. **Tracking**: Recording and analyzing user behavior.
++ Browsers are generally limited to a maximum number of cookies per domain (varies by browser, generally in the hundreds), and a maximum size per cookie (usually 4KB).
++ Cookies are sent with every request, so they can worsen performance on low speed connections, especially if a lot of cookies are set.
+
+### Creating Cookies
++ Cookies are set using the `Set-Cookie` header. 
++ Syntax: `Set-Cookie: <cookie-name>=<cookie-value>`
++ Example:
+  ```
+  HTTP/2.0 200 OK
+  Content-Type: text/html
+  Set-Cookie: yummy_cookie=chocolate
+  Set-Cookie: tasty_cookie=strawberry
+
+  page-body
+
+  ```
++ To set cookies using JavaScript:
+  ```js
+  document.cookie = "yummy_cookie=chocolate";
+  ```
+
+### Updating Cookies
++ To update a cookie via HTTP, the server can send a `Set-Cookie` header with the existing cookie's name and a new value. For example:
+  ```
+  Set-Cookie: id=new-value
+  ```
++ To update a cookie via JavaScript:
+  ```js
+  document.cookie = "yummy_cookie=new_value";
+  ```
+  **Note:** To do this in broser console, it is must that the `HttpOnly` attribute isn't set on the cookie.
+
+### Types Of Cookies (On Th Basis Of Their Life)
+1. **Permanent Cookies:** These cookies are deleted after the date specified in the `Expires` attribute or after the period specified in the `Max-Age` attribute. Example: 
+   ```
+   Set-Cookie: id=a3fWa; Expires=Day, Date Month Year HH:MM:SS TIME_ZONE;
+   Set-Cookie: id=a3fWa; Expires=Thu, 31 Oct 2021 07:28:00 GMT;
+
+   Set-Cookie: id=a3fWa; Max-Age=seconds
+   Set-Cookie: id=a3fWa; Max-Age=2592000
+   ```
+   **Note:** `Max-Age` is less error-prone, and takes precedence when both are set.
+   > The rationale behind this is that when you set an Expires date and time, they're relative to the client the cookie is being set on. If the server is set to a different time, this could cause errors.
+
+2. **Session Cookies:** These are the cookies that contain NO `Expires` or `Max-Age` attributes and are deleted when the current session ends. The browser defines when the "current session" ends.
+   + **Note 1:** Some browsers use session restoring when restarting. This can cause session cookies to last indefinitely.
+   + **Note 2:** If your site authenticates users, it should regenerate and resend session cookies, even ones that already exist, whenever a user authenticates. This approach helps prevent **session fixation attacks**, where a third-party can reuse a user's session.
+
+### Cookie Recreation
++ There are some techniques designed to recreate cookies after they're deleted. These are known as "zombie" cookies. 
++ These techniques violate the principles of user privacy and control, may violate data privacy regulations, and could expose a website using them to legal liability.
+
+### Security Aspect
++ By default, all cookie are visible to, and can be changed by, the end user.
++ A cookie with the `Secure` attribute is only sent via an encrypted request over the **HTTPS** protocol.
+  + A site with HTTP protocol can not send such cookies.
+  + It increases the complexity for MITM attackers. But it is not an absolute win.
+  + For example, someone with access to the client's hard disk (or JavaScript if the HttpOnly attribute isn't set) can read and modify the information.
++ A cookie with the `HttpOnly` attribute can't be accessed by JavaScript, meaning, `document.cookie` is not possible; it can only be accessed when it reaches the server. 
+  + Cookies that persist user sessions should always have the `HttpOnly` attribute set. 
+  + This helps mitigating **cross-site scripting (XSS) attacks**.
++ JWT is another authentication mechanism which we can explore.
++ The `Domain` and `Path` attributes define the scope of a cookie: what URLs the cookies are sent to.
+
+----
+#### Some Knowledge
++ A **cross-site request** is a request that changes our current domain to another domain. Example: Opening an affiliate link from the description of a **youtube.com** video that points to **amazon.com**. This is a cross-site request. While the requests that keeps us on the same domain are **same-site requests**.
++ A **top-level navigation** is when you directly click on a link.
++ A **sub-request** is a request made by your browser on the behalf of the current domain to fetch certain resources that are to be displayed on the current page.
++ Example:
+  + You visited on `amazon.com` from `youtube.com` by clicking on an affiliate link in a youtube video's description is an example of a *top-level navigation*.
+  + Amazon instructed your browser to get some info from `youtube.com` or `instagram.com` to personalize the content being displayed to you, these are *sub-requests*.
++ + Cookie prefixes are specific strings added at the beginning of a cookie name to indicate certain special behaviors.
+----
+
++ The `SameSite` attribute lets servers specify if the browser should send the cookies associated with this domain in cross-site requests.
+  + It provides some protection against **cross-site request forgery (CSRF)** attacks.
+  + It takes three possible values: Strict, Lax, and None:
+    1. `Strict` won't send your cookies in cross-site requests.
+    2. `Lax` will allow cookies to be sent in cross-site requests when it is **top-level navigation**. And it will not send any cookie for **sub-requests**.
+    3. `None` means no restriction. The Secure attribute must be set here.
+  + **Note:** If no SameSite attribute is set, the cookie is treated as `Lax` by default.
+
++ To confine the cookie to a certain domain(s) or sub-domain(s), use the `domain` and `path` attributes.
+  + If the domain attribute is not specified, the cookie is only available to the domain that set it.
+  + The path attribute specifies the URL path for which the cookie is valid. It controls which part of the website the cookie is accessible to. If you set the path attribute to /, the cookie is available for the entire domain. If you set it to a specific path (like /account), the cookie will only be sent for URLs that match that path or are under it.
+
++ Cookie Prefixes:
+  + Because of the design of the cookies, a server can't confirm that a cookie was set from a secure origin or even tell where a cookie was originally set. 
+  + A vulnerable application on a subdomain can set a cookie with the Domain attribute, which gives access to that cookie on all other subdomains. This mechanism can be abused in a session fixation attack.
+  + A cookie with `__Secure-` prefix is only sent over HTTPS connections. This is a security measure to prevent cookies from being exposed over unencrypted connections (HTTP). For this, the cookie must have the `secure` attribute and should be sent from a secure origin. Example: `__Secure-SessionId`
+  + A cookie with `__Host-` prefix must
+    + be set with the `Secure` and `SameSite=Strict` attributes, 
+    + come from a secure origin, 
+    + not have the `domain` attribute, and 
+    + have the path attribute set to `/`. 
+    
+    This prefix ensures that the cookie is protected from *cross-site request forgery (CSRF) attacks*. In other words, it makes the cookie **domain-locked**. Example: `__Host-UserId`
 
 # Reference
 + [HTTP Reference, on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
