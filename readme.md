@@ -27,6 +27,13 @@
     - [Validation](#validation)
     - [Force Revalidation](#force-revalidation)
     - [Don't Cache](#dont-cache)
+  - [Authentication](#authentication)
+    - [Proxy Authentication](#proxy-authentication)
+    - [Access Forbidden](#access-forbidden)
+    - [Character Encoding For HTTP Authentication](#character-encoding-for-http-authentication)
+    - [Authentication Method](#authentication-method)
+    - [Authentication Schemes](#authentication-schemes)
+    - [Basic HTTP Authentication (RFC 7617)](#basic-http-authentication-rfc-7617)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -390,8 +397,73 @@ The MIME Sniffing Standard also allows JavaScript to be served using any of the 
 ### Don't Cache
 To prevent caching of a response, use `no-store`.
 
+## Authentication
++ RFC 7235 provides a general framework for access control and authentication in HTTP.
++ The server responds to a client with a `401 Unauthorized` response status and provides information on how to authorize with a `WWW-Authenticate` response header containing at least one challenge.
++ A client that wants to authenticate itself with the server can do so by including an `Authorization` request header with the credentials.
++ The "Basic" authentication scheme sends the credentials encoded but not encrypted. This would be completely insecure unless the exchange was done over a secure connection ( like HTTPS/TLS).
+
+### Proxy Authentication
++ The same challenge and response mechanism is used.
++ A `407 Proxy Authentication Required` is issued.
++ The `Proxy-Authenticate` response header contains at least one challenge applicable to the proxy.
++ The Proxy-Authorization request header is used for providing the credentials to the proxy server.
+
+### Access Forbidden
++ If a (proxy) server receives invalid credentials, it should respond with a `401 Unauthorized` or with a `407 Proxy Authentication Required`, and the user may send a new request or replace the `Authorization` header field.
++ If a (proxy) server receives valid credentials that are inadequate to access a given resource, the server should respond with the 403 Forbidden status code.
++ A `404 Not Found` status code can be used to hide the existence of the page to a user without adequate privileges or not correctly authenticated.
+  
+### Character Encoding For HTTP Authentication
+`UTF-8`
+
+Earlier Firefox used `ISO-8859-1` encoding.
+
+### Authentication Method
++ The `WWW-Authenticate` and `Proxy-Authenticate` response headers define the authentication method that should be used to gain access to a resource.
++ The syntax:
+  ```
+  WWW-Authenticate: AUTH_SCHEME realm=<realm>
+  Proxy-Authenticate: AUTH_SCHEME realm=<realm>
+  ```
+  > The **realm** refers to the space the user is trying to get access to.
+
++ The `Authorization` and `Proxy-Authorization` request headers contain the credentials to authenticate a user agent with a (proxy) server.
++ The syntax:
+  ```
+  Authorization: AUTH_SCHEME <credentials>
+  Proxy-Authorization: AUTH_SCHEME <credentials>
+  ```
+  > Here, the **credentials** can be encoded or encrypted depending on the authentication scheme.
+
+### Authentication Schemes
+IANA maintains a list of authentication schemes, but there are other schemes offered by host services, such as Amazon AWS. 
+
+IANA maintained authentication schemes include:
+1. `Basic` (base64-encoded credentials)
+2. `Bearer` (bearer tokens to access OAuth 2.0-protected resources)
+3. `Concealed`
+4. `Digest`
+5. `DPoP`
+6. `GNAP`
+7. `HOBA` (HTTP Origin-Bound Authentication, digital-signature-based)
+8. `Mutual`
+9. `Negotiate/NTLM`
+10. `OAuth`
+11. `Private Token`
+12. `SCRAM-SHA-1`
+13. `SCRAM-SHA-256`
+14. `Vapid`
+
+Amazon AWS Server Authentication (`AWS4-HMAC-SHA256`)
+
+### Basic HTTP Authentication (RFC 7617)
++ It transmits credentials as user ID/password pairs, encoded using base64, still in plain-text.
++ HTTPS/TLS should be used with basic authentication as it is not secure at all.
+
 # Reference
 + [HTTP Reference, on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
 + [Stateless Protocol, Wikipedia](https://en.wikipedia.org/wiki/Stateless_protocol)
 + [Complete List Of MIME Types, IANA Registry](https://www.iana.org/assignments/media-types/media-types.xhtml)
 + [Common MIME Types, MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types)
++ [IANA HTTP Authentication Schemes Registry](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)
