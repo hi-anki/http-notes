@@ -40,6 +40,20 @@
     - [Cookie Recreation](#cookie-recreation)
     - [Security Aspect](#security-aspect)
       - [Some Knowledge](#some-knowledge)
+  - [Redirections In HTTP](#redirections-in-http)
+    - [Types Of Redirects](#types-of-redirects)
+      - [1. Permanent Redirection](#1-permanent-redirection)
+      - [2. Temporary Redirection](#2-temporary-redirection)
+      - [3. Special Redirection](#3-special-redirection)
+    - [Methods Of Redirection](#methods-of-redirection)
+      - [1. HTTP Redirection](#1-http-redirection)
+      - [2. HTML Redirection](#2-html-redirection)
+      - [3. JavaScript Redirection](#3-javascript-redirection)
+    - [Order Of Precedence](#order-of-precedence)
+    - [Use Cases](#use-cases)
+      - [1. Domain Aliasing](#1-domain-aliasing)
+      - [2. Website Restructuring](#2-website-restructuring)
+      - [3. Temporary Redirects To Unsafe Requests](#3-temporary-redirects-to-unsafe-requests)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -584,6 +598,85 @@ The Basic authentication scheme sends the credentials as **userId/password** pai
     + have the path attribute set to `/`. 
     
     This prefix ensures that the cookie is protected from *cross-site request forgery (CSRF) attacks*. In other words, it makes the cookie **domain-locked**. Example: `__Host-UserId`
+
+## Redirections In HTTP
++ URL redirection, also known as URL forwarding, is a technique to give more than one URL address to a webpage. HTTP has a special kind of response, called a HTTP redirect, for this.
++ Redirects have numerous advatanges, such as:
+  1. Temporary redirects during site maintenance or downtime.
+  2. Permanent redirects to preserve existing links after changing the site's URLs.
++ Redirection is triggered when a server responds with a **redirect response**. Such response has a `3XX` status code and a `Location` header holding the URL to redirect to.
++ When browsers receive a redirect, they immediately load the new URL provided in the Location header.
+
+### Types Of Redirects
+#### 1. Permanent Redirection
+These are meant to last forever. They imply that the original URL should no longer be used, and replace it with the new one.
+
+| Response | Description |
+| - | - |
+| `301 Moved Permanently` | `GET` method is preserved, others may or may not be changed to `GET`. |
+| `308 Permanent Redirect` | Preserves the original HTTP method & request body. |
+
+#### 2. Temporary Redirection
+Sometimes, the requested resource can't be accessed from its canonical location, but it can be accessed from another place. In this case, a temporary redirect can be used.
+
+| Response | Description | Use Case
+| - | - | - |
+| `302 Found` | `GET` method is preserved, others may or may not be changed to `GET`. | The Web page is temporarily unavailable for unforeseen reasons. |
+| `303 See Other` | `GET` method is preserved, others are changed to `GET` & request body is lost. | Used to redirect after a PUT or a POST, operation so that refreshing the result page doesn't re-trigger the operation. |
+| `307 Temporary Redirect` | Preserves the original HTTP method & request body. | Same as `302` but better for non-`GET` methods. |
+
+#### 3. Special Redirection
+| Response | Description |
+| - | - |
+| `300 Multiple Choices` | |
+| `304 Not Modified` | Sent for revalidated conditional requests. Indicates that the cached response is still fresh and can be used. |
+
+### Methods Of Redirection
+#### 1. HTTP Redirection
+HTTP redirects are the best way to create redirections.
+
+#### 2. HTML Redirection
++ A `<meta>` element with its `http-equiv` attribute set to `Refresh` in the `<head>` of the page does the same thing. When displaying the page, the browser will go to the indicated URL. Example:
+  ```html
+  <head>
+    <meta http-equiv="Refresh" content="0; URL=https://example.com/" />
+  </head>
+  ```
+  The `content` attribute should start with a number indicating how many seconds the browser should wait before redirecting to the given URL. Always set it to 0 for accessibility compliance.
+
++ This method only works with HTML, and cannot be used for images or other types of content.
+
+#### 3. JavaScript Redirection
+Redirections in JavaScript are performed by setting a URL string to the `window.location` property, loading the new page. Example:
+```js
+window.location = "https://example.com/";
+```
+
+Like HTML redirections, this can't work on all resources. Also, this will only work on clients that can execute JavaScript.
+
+### Order Of Precedence
+1. HTTP redirects.
+2. JavaScript redirects.
+   > This is because the `<meta>` redirect happens after the page is completely loaded, which is after all the scripts have been executed.
+4. HTML redirects.
+5. If there is any JavaScript redirect that happens after the page is loaded (for example, on a button click), it will execute last if the page isn't already redirected by the previous methods.
+
+### Use Cases
+#### 1. Domain Aliasing
+1. Expanding the reach of your site. 
+   + A common case is when a site resides at www.example.com, but accessing it from example.com should also work. Redirections for example.com to www.example.com are thus set up. 
+   + Common synonyms or frequent typos of your domains can be redirected to the main domain.
+2. Moving to a new domain.
+   + Your company was renamed, but you want existing links or bookmarks to still find you under the new name.
+3. Forcing HTTPS.
+   + Requests made to the `http://` version of the site will be redirected to the `https://` version.
+
+#### 2. Website Restructuring
++ When restructuring your website, URLs change. Even if you update your site's links to match the new URLs, you have no control over the URLs used by external resources. 
++ To avoid breaking these links, we can set up redirects from the old URLs to the new ones.
+
+#### 3. Temporary Redirects To Unsafe Requests
+Unsafe requests modify the state of the server and the user shouldn't resend them unintentionally.
 
 # Reference
 + [HTTP Reference, MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
