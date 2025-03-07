@@ -786,3 +786,4 @@ A Proxy Auto-Configuration (PAC) file is a JavaScript function that determines w
 + [WebAppSec/Web Security Verification](https://wiki.mozilla.org/WebAppSec/Web_Security_Verification)
 + [Mozilla Security Review and Best Practices Guide](https://www-archive.mozilla.org/projects/security/components/reviewguide.html)
 + [Firefox security guidelines](https://developer.mozilla.org/en-US/docs/Web/Security/Firefox_Security_Guidelines)
++ [Analyze Flaws In A Website Using HTTP Observatory](https://developer.mozilla.org/en-US/observatory)
