@@ -66,6 +66,7 @@
     - [High Entropy Client Hints](#high-entropy-client-hints)
     - [Critical Client Hints](#critical-client-hints)
 - [Reference](#reference)
+- [Other Useful Resources](#other-useful-resources)
 
 # HyperText Transfer Protocol (HTTP)
 + Application layer protocol.
@@ -780,3 +781,8 @@ A Proxy Auto-Configuration (PAC) file is a JavaScript function that determines w
 + [Common MIME Types, MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types)
 + [IANA HTTP Authentication Schemes Registry](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)
 + [HTTP Tunneling, Wikipedia](https://en.wikipedia.org/wiki/HTTP_tunnel)
+
+# Other Useful Resources
++ [WebAppSec/Web Security Verification](https://wiki.mozilla.org/WebAppSec/Web_Security_Verification)
++ [Mozilla Security Review and Best Practices Guide](https://www-archive.mozilla.org/projects/security/components/reviewguide.html)
++ [Firefox security guidelines](https://developer.mozilla.org/en-US/docs/Web/Security/Firefox_Security_Guidelines)
