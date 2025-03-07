@@ -54,6 +54,13 @@
       - [1. Domain Aliasing](#1-domain-aliasing)
       - [2. Website Restructuring](#2-website-restructuring)
       - [3. Temporary Redirects To Unsafe Requests](#3-temporary-redirects-to-unsafe-requests)
+  - [Proxy Servers](#proxy-servers)
+    - [1. Forward Proxy](#1-forward-proxy)
+    - [2. Reverse Proxy](#2-reverse-proxy)
+    - [HTTP Tunneling](#http-tunneling)
+    - [How It Is Done?](#how-it-is-done)
+    - [Proxy Auto-Configuration (PAC)](#proxy-auto-configuration-pac)
+    - [Common Use Cases](#common-use-cases)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -678,9 +685,60 @@ Like HTML redirections, this can't work on all resources. Also, this will only w
 #### 3. Temporary Redirects To Unsafe Requests
 Unsafe requests modify the state of the server and the user shouldn't resend them unintentionally.
 
+## Proxy Servers
+### 1. Forward Proxy
++ A forward proxy, or gateway, or just "proxy" provides proxy services to a client or a group of clients.
++ They store and forward Internet services (like the DNS, or web pages) to reduce and control the bandwidth usage.
++ A forward proxy acts on behalf of clients.
++ Forward proxies can also be anonymous and allow users to hide their IP address while browsing the Web or using other Internet services. 
++ For example, `Tor` routes internet traffic through multiple proxies for anonymity.
+
+### 2. Reverse Proxy
++ A reverse proxy acts on the behalf of a server.
++ Reverse proxies can hide the identities of servers.
++ Reverse proxies can be used to distribute the load to several web servers (Load Balancing).
++ Reverse proxies can be used to offload the web servers by caching static content like pictures (Cache Static Content).
++ Reverse proxies can be used to compress and optimize content to speed up load time (Compression).
+----
+
++ `Forwarded` is the standardized header to convey original host information, that might get lost in the path of proxies.
++ Some non-standard ones are: 
+  1. `X-Forwarded-For`: Identifies the originating IP addresses of a client connecting to a web server through an HTTP proxy or a load balancer.
+  2. `X-Forwarded-Host`: Identifies the original host requested that a client used to connect to your proxy or load balancer.
+  3. `X-Forwarded-Proto`: Identifies the protocol (HTTP or HTTPS) that a client used to connect to your proxy or load balancer.
+  4. `Via`: To convey information about the proxy itself. It is added by the proxies itself.
+
+### HTTP Tunneling
++ HTTP tunneling is a technique that allows you to send data or messages over a network using the HTTP protocol, even if the actual communication is intended for a different protocol.
++ It is the same relaying your message through someone else, who is trusted and respected by the person you want to deliver your message to.
++ HTTP tunneling is using a protocol of higher level (HTTP) to transport a lower level protocol (TCP).
++ It is used to create a network link between two computers in conditions of restricted network connectivity like firewalls, NATs and ACLs. The tunnel is created by an intermediary called a proxy server which is usually located in a DMZ.
++ The `CONNECT` method in HTTP starts a two-way communication with the requested resource and can be used to open a tunnel.
+  + This is how a client behind an HTTP proxy can access websites using TLS.
+  + However, not all proxy servers support it or restrict it to port 443 only.
+
+### How It Is Done?
+1. The data that has to be transmitted (which may use a different protocol like SSH) is wrapped inside HTTP packets. These HTTP packets are then sent over the network, just like any normal HTTP traffic.
+2. To make this work, we need an **intermediary proxy server** or **tunnel endpoint**. 
+   + This server is configured to recognize the encapsulated data and forward it to the actual destination where the original protocol can be processed. 
+   + The server acts as a translator, extracting the original data from the HTTP packets and forwarding it to the correct destination.
+3. Many firewalls and network security devices are configured to only allow HTTP/HTTPS traffic, as it's very common and often essential for web browsing. 
+   + By tunneling other types of traffic inside HTTP, the traffic can bypass these restrictions. 
+   + This is especially useful in restricted networks where protocols like SSH or FTP might be blocked.
+
+### Proxy Auto-Configuration (PAC)
+A Proxy Auto-Configuration (PAC) file is a JavaScript function that determines whether web browser requests (HTTP, HTTPS, and FTP) go directly to the destination or are forwarded to a web proxy server.
+
+### Common Use Cases
+1. Bypassing Network Restrictions.
+2. Accessing Remote Services. 
+3. Secure Communication (over untrusted networks).
+
 # Reference
++ **Almighty ChatGPT**
 + [HTTP Reference, MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP)
 + [Stateless Protocol, Wikipedia](https://en.wikipedia.org/wiki/Stateless_protocol)
 + [A Complete List Of MIME Types, IANA Registry](https://www.iana.org/assignments/media-types/media-types.xhtml)
 + [Common MIME Types, MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types)
 + [IANA HTTP Authentication Schemes Registry](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)
++ [HTTP Tunneling, Wikipedia](https://en.wikipedia.org/wiki/HTTP_tunnel)
