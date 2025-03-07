@@ -61,6 +61,10 @@
     - [How It Is Done?](#how-it-is-done)
     - [Proxy Auto-Configuration (PAC)](#proxy-auto-configuration-pac)
     - [Common Use Cases](#common-use-cases)
+  - [HTTP Cient Hints](#http-cient-hints)
+    - [Low Entropy Client Hints](#low-entropy-client-hints)
+    - [High Entropy Client Hints](#high-entropy-client-hints)
+    - [Critical Client Hints](#critical-client-hints)
 - [Reference](#reference)
 
 # HyperText Transfer Protocol (HTTP)
@@ -733,6 +737,40 @@ A Proxy Auto-Configuration (PAC) file is a JavaScript function that determines w
 1. Bypassing Network Restrictions.
 2. Accessing Remote Services. 
 3. Secure Communication (over untrusted networks).
+
+## HTTP Cient Hints
++ Client hints are a set of HTTP request header fields that a server can proactively request from a client to get information about the device, network, user, and user-agent-specific preferences. 
++ The server can determine which resources to send, based on the information that the client chooses to provide.
++ The client will decide which info to send.
++ A server must announce that it supports client hints, using the `Accept-CH` header to specify the hints that it is interested in receiving. Example:
+
+  ```
+  Accept-CH: Width, Downlink, Sec-CH-UA
+  ```
+
++ Client hints can also be specified in HTML using the `<meta>` element with the http-equiv attribute. Example:
+  ```html
+  <meta http-equiv="Accept-CH" content="Width, Downlink, Sec-CH-UA" />
+  ```
+
+### Low Entropy Client Hints
++ They don't give away much information that might be used to create a fingerprinting for a user.
++ They may be sent by default on every client request, irrespective of the server Accept-CH response header, depending on the permission policy.
++ They include:
+  ```
+  Save-Data,
+  Sec-CH-UA,
+  Sec-CH-UA-Mobile, and
+  Sec-CH-UA-Platform
+  ```
+
+### High Entropy Client Hints
++ The high entropy hints are those that have the potential to give away more information that can be used for user fingerprinting.
++ They are gated in such a way that the user agent can make a decision whether to provide them.
++ All client hints that are not low entropy hints are considered high entropy hints.
+
+### Critical Client Hints
++ A critical client hint is one where applying the response may significantly change the rendered page, potentially in a way that is jarring or will affect usability, and therefore which must be applied before the content is rendered.
 
 # Reference
 + **Almighty ChatGPT**
