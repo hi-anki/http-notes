@@ -70,12 +70,12 @@
 
 # HyperText Transfer Protocol (HTTP)
 + Application layer protocol.
-+ Works on client-server model, where a user initiates a request using their browser (`user-agent`) and a server responds to that request. These messages are called **request** and **response**.
++ Works on client-server model, where a user initiate a request using a browser (`user-agent`) and a server responds to it. These messages are called **request** and **response**.
   > **Note:** Browsers aren't the only `user-agent`. Utilities like `curl`, `python-requests` have their own `user-agent`.
 
 + Between the Web browser and the server, numerous computers relay these HTTP messages.
   + Those operating at the application layer are generally called **proxies**.
-  + These can be **transparent**, forwarding on the requests they receive without altering them in any way, or **non-transparent**, in which case they will change the request in some way before passing it along to the server.
+  + These can be **transparent**, forwarding the requests they receive without altering them in any way, or **non-transparent**, in which case they will change the request in some way before passing it along to the server.
 
 + It is the foundation of any data exchange happening on the Web.
 + HTTP is also extensible with the introduction of `headers`.
@@ -88,14 +88,14 @@
   + Before a client and a server can exchange messages, they must establish a TCP connection. 
   + The default behavior of `HTTP/1.0` is to open a separate TCP connection for each HTTP request/response pair. This is less efficient than sharing a single TCP connection when multiple requests are sent in close succession.
 
-+ HTTP connections before `HTTP/2` were human readable as they were in plain-text format. With HTTP/2, these simple messages are encapsulated in frames, making them impossible to read directly.
++ HTTP connections before `HTTP/2` were human readable as they were in plain-text format, unless encrypted. With HTTP/2, these simple messages are encapsulated in frames, making them impossible to read directly.
 
 + HTTP(over TCP):80
 + HTTPS(over TCP):443
 
 ## HTTP Request
 + An HTTP Request is made up of three blocks:
-  1. The first line is **the status line**. It consists of the 3 things:
+  1. **The status line**. It consists of 3 things:
      1. The request method.
      2. Absolute path to the target, without the protocol or domain name.
      3. HTTP version being used.
