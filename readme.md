@@ -34,6 +34,7 @@
     - [Authentication Schemes](#authentication-schemes)
     - [Basic HTTP Authentication (RFC 7617)](#basic-http-authentication-rfc-7617)
   - [Cookies](#cookies)
+    - [Rules](#rules)
     - [Creating Cookies](#creating-cookies)
     - [Updating Cookies](#updating-cookies)
     - [Types Of Cookies (On The Basis Of Their Life)](#types-of-cookies-on-the-basis-of-their-life)
@@ -511,6 +512,11 @@ The Basic authentication scheme sends the credentials as **userId/password** pai
   3. **Tracking**: Recording and analyzing user behavior.
 + Browsers are generally limited to a maximum number of cookies per domain (varies by browser, generally in the 100s), and a maximum size per cookie (usually 4KB).
 + Cookies are sent with every request, so they can worsen performance on low speed connections, especially if a lot of cookies are set.
+
+### Rules
+1. Cookies added for `.example.com` can be read by all the subdomains of `example.com` as well. Ex- `subexample1.example.com`
+2. Cookies added for a subdomain can only read by the subdomain and its childrens. Ex- `firstexample.subex1.example.com` can also read the cookie set for `subex1.example.com`
+3. A subdomain can set cookies for itself, its children and its parent, but not the sibling domains. Ex- `subex1.example.com` can set cookies for `subex2.example.com` 
 
 ### Creating Cookies
 + Cookies are set using the `Set-Cookie` header. 
